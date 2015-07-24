@@ -17,6 +17,12 @@ var shapeType = SHAPE_TYPE_TRIANGLE;
 
 window.onload = function init()
 {
+document.getElementById("shapeSelector").onchange = onShapeSelectorChange;
+document.getElementById("thetaSlider").onchange = onThetaSliderChange;
+document.getElementById("borderCheckbox").onchange = onBorderCheckboxChange;
+document.getElementById("numTimesInput").onchange = onNumTimesInputChange;
+document.getElementById("sizeSlider").onchange = onSizeSliderChange;
+	
 	canvas = document.getElementById("gl-canvas");
 
 	gl = WebGLUtils.setupWebGL(canvas);
@@ -197,33 +203,33 @@ function getSquareVertices()
 	return vertices;
 }
 
-document.getElementById("shapeSelector").onchange = function() 
+function onShapeSelectorChange() 
 {
 	shapeType = document.getElementById("shapeSelector").value;
 	resetShape();
 	render();
 };
 
-document.getElementById("thetaSlider").onchange = function() 
+function onThetaSliderChange() 
 {
 	theta = document.getElementById("thetaSlider").value;
 	render();
 };
 
-document.getElementById("borderCheckbox").onchange = function() 
+function onBorderCheckboxChange() 
 {
 	resetShape();
 	render();
 };
 
-document.getElementById("numTimesInput").onchange = function() 
+function onNumTimesInputChange() 
 {
 	numTimesToSubdivide = Number(document.getElementById("numTimesInput").value);
 	resetShape();
 	render();
 };
 
-document.getElementById("sizeSlider").onchange = function() 
+function sizeSlider() 
 {
 	shapeSize = document.getElementById("sizeSlider").value;
 	resetShape();
