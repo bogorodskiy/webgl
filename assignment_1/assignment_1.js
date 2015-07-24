@@ -229,7 +229,7 @@ function onNumTimesInputChange()
 	render();
 };
 
-function sizeSlider() 
+function onSizeSliderChange() 
 {
 	shapeSize = document.getElementById("sizeSlider").value;
 	resetShape();
