@@ -6,18 +6,21 @@
 		<script id="vertex-shader" type="x-shader/x-vertex">
 			attribute vec4 vPosition;
 
-			void main()
+			void
+			main()
 			{
+				gl_PointSize = 3.0;
 				gl_Position = vPosition;
 			}
 		</script>
 
 		<script id="fragment-shader" type="x-shader/x-fragment">
 			precision mediump float;
-			
-			void main()
+
+			void
+			main()
 			{
-				gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+				gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 );
 			}
 		</script>
 
@@ -26,12 +29,22 @@
 		<script type="text/javascript" src="../Common/MV.js"></script>
 		<script type="text/javascript" src="script.js"></script>
 		<script type="text/javascript" src="jscolor.js"></script>
+		<script type="text/javascript" src="../jquery/jquery-1.11.3.js"></script>
+		<script type="text/javascript" src="../jquery/jquery-ui.js"></script>
+		<link rel="stylesheet" href="../jquery/jquery-ui.css">
 	</head>
 	<body>
-		<div id="controls">
-			<input id="sizeSlider" type="range" min="0.5" max="3" step="0.5" value="0.5" > Brush size</input>
-			<br/>
-			<input class="color" value="66ff00"> Color</input>
+		<div id="controls" style="padding-top:15px">
+			<div>
+				<input id="sizeSlider" type="range" min="1" max="20" step="1" value="20" > Brush size(pixels)</input>
+				<span id="brushSizeField">1</span>
+			</div>
+			<div style="padding-top:15px">
+				<input class="color" value="66ff00"> Color</input>
+			</div>
+			<div style="padding-top:15px; padding-bottom:15px">
+				<button id="clearButton">Clear</button>
+			</div>
 		</div>
 
 		<canvas id="gl-canvas" width="512" height="512">
