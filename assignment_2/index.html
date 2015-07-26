@@ -9,7 +9,6 @@
 			void
 			main()
 			{
-				gl_PointSize = 3.0;
 				gl_Position = vPosition;
 			}
 		</script>
@@ -27,7 +26,7 @@
 		<script type="text/javascript" src="../Common/webgl-utils.js"></script>
 		<script type="text/javascript" src="../Common/initShaders.js"></script>
 		<script type="text/javascript" src="../Common/MV.js"></script>
-		<script type="text/javascript" src="script.js"></script>
+		<script type="text/javascript" src="script3.js"></script>
 		<script type="text/javascript" src="jscolor.js"></script>
 		<script type="text/javascript" src="../jquery/jquery-1.11.3.js"></script>
 		<script type="text/javascript" src="../jquery/jquery-ui.js"></script>
@@ -36,11 +35,11 @@
 	<body>
 		<div id="controls" style="padding-top:15px">
 			<div>
-				<input id="sizeSlider" type="range" min="1" max="20" step="1" value="20" > Brush size(pixels)</input>
+				<input id="sizeSlider" type="range" min="1" max="5" step="1" value="3" > Brush size(pixels)</input>
 				<span id="brushSizeField">1</span>
 			</div>
 			<div style="padding-top:15px">
-				<input class="color" value="66ff00"> Color</input>
+				<input id="colorPicker" class="color" value="66ff00"> Color</input>
 			</div>
 			<div style="padding-top:15px; padding-bottom:15px">
 				<button id="clearButton">Clear</button>

@@ -5,17 +5,16 @@ var MIN_MOVE_TIME_DELTA = 0; // ms
 var canvas = null;
 var canvasBounds = null;
 var gl = null;
-var linePoints = [];
 var date = new Date();
 var lastTime = 0;
 var lineWidth = 2;
-var vertices = [];
 var bufferId = 0;
-var colorBufferId = 0;
 var brushSize = 1;
 var lastCanvasX = 0;
 var lastCanvasY = 0;
-var index = 0;
+var verticesByIndex = [];
+var linePointsByIndex = [];
+var index = -1;
 
 window.onload = function init() 
 {
@@ -40,25 +39,20 @@ window.onload = function init()
 	gl.useProgram(program);	
 	
 	bufferId = gl.createBuffer();
-	
-    gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
-    //gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW) ;
+	gl.bindBuffer( gl.ARRAY_BUFFER, bufferId );
+
 	var vPosition = gl.getAttribLocation(program, "vPosition");
 	gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vPosition);
-
-	/*colorBufferId = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferId);
-	gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
-	var vColor = gl.getAttribLocation(program, "vColor");
-	gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-	gl.enableVertexAttribArray(vColor); */
 	
 	render();
 }
 
 function addTriangles()
 {
+	var vertices = verticesByIndex[index];
+	var linePoints = linePointsByIndex[index];
+	
 	if (linePoints.length < 2)
 	{
 		return;
@@ -75,25 +69,23 @@ function addTriangles()
 	var v2 = vec2(-v1[0], -v1[1]);
 	var v3 = vec2(-v1[0] + vector[0], -v1[1] + vector[1]);
 	var v4 = vec2(v1[0] + vector[0], v1[1] + vector[1]);
-
-	// connect with previous rectangle
-	if (linePoints.length < 3)
+	
+	if (vertices.length == 0)
 	{
-		addVertex(vec2(point1[0] + v1[0], point1[1] + v1[1]));
-		addVertex(vec2(point1[0] + v2[0], point1[1] + v2[1]));
+		vertices[vertices.length] = vec2(point1[0] + v1[0], point1[1] + v1[1]);
+		vertices[vertices.length] = vec2(point1[0] + v2[0], point1[1] + v2[1]);
 	}
 
-	addVertex(vec2(point1[0] + v3[0], point1[1] + v3[1]));
-	addVertex(vec2(point1[0] + v4[0], point1[1] + v4[1]));
+	vertices[vertices.length] = vec2(point1[0] + v3[0], point1[1] + v3[1]);
+	vertices[vertices.length] = vec2(point1[0] + v4[0], point1[1] + v4[1]);
+	
+	console.log("vertices length:" + vertices.length);
+	
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 	
 	render();
-}
-
-function addVertex(vertex)
-{
-	gl.bindBuffer(gl.ARRAY_BUFFER, bufferId);
-	gl.bufferSubData(gl.ARRAY_BUFFER, sizeof['vec2'] * index, flatten(vertex));
-	index++;
 }
 
 // open gl coordinates to pixels
@@ -110,14 +102,18 @@ function onMouseDown(event)
 	var glX = 2 * (canvasX / canvas.width) - 1;
 	var glY = -1 + 2 * (canvas.height - canvasY) / canvas.height;
 
-	//gl.bindBuffer( gl.ARRAY_BUFFER, colorBufferId );
-	
-	//linePoints[linePoints.length] = vec2(glX, glY);
-	//addTriangles();	
+	index++;
+	verticesByIndex[index] = [];
+	linePointsByIndex[index] = [];
 	
 	canvas.addEventListener("mousemove", onMouseMove);
 	canvas.addEventListener("mouseup", onMouseUp);
 	canvas.addEventListener("mouseout", onMouseOut);
+	
+	console.log("mouse down");
+	
+	// TODO remove test
+	//canvas.addEventListener("click", onClick);
 }
 
 function onMouseMove(event)
@@ -143,6 +139,7 @@ function onMouseMove(event)
 		var glX = 2 * (canvasX / canvas.width) - 1;
 		var glY = -1 + 2 * (canvas.height - canvasY) / canvas.height;
 		
+		var linePoints = linePointsByIndex[index];
 		linePoints[linePoints.length] = vec2(glX, glY);
 		addTriangles();
 	}
@@ -161,7 +158,25 @@ function onMouseUp(event)
 	canvas.removeEventListener("mousemove", onMouseMove);
 	canvas.removeEventListener("mouseout", onMouseOut);
 	canvas.removeEventListener("mouseup", onMouseUp);
+	
 	//console.log("onMouseUp");
+}
+
+function onClick(event)
+{
+	var canvasX = event.clientX - canvasBounds.left;
+	var canvasY = event.clientY - canvasBounds.top;
+	
+	if (canvasX != lastCanvasX && canvasY != lastCanvasY)
+	{
+		lastCanvasX = canvasX;
+		lastCanvasY = canvasY;
+		var glX = 2 * (canvasX / canvas.width) - 1;
+		var glY = -1 + 2 * (canvas.height - canvasY) / canvas.height;
+		
+		linePoints[linePoints.length] = vec2(glX, glY);
+		addTriangles();
+	}
 }
 
 function onBrushSizeChange(event)
@@ -174,15 +189,17 @@ function onBrushSizeChange(event)
 function onClearButtonClick(event)
 {
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	vertices.length = 0;
-	linePoints.length = 0;
+	verticesByIndex.length = 0;
+	linePointsByIndex.length = 0;
 }
 
 function render() 
 {
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	gl.drawArrays(gl.TRIANGLE_STRIP, 0, index);
-	//gl.drawArrays(gl.TRIANGLES, 0, vertices.length);
-	//gl.drawArrays(gl.LINES, 0, vertices.length);
-	//gl.drawArrays(gl.POINTS, 0, vertices.length);
+	
+	for (var i = 0; i < verticesByIndex.length; i++)
+	{
+		var vertices = verticesByIndex[i];
+		gl.drawArrays(gl.TRIANGLE_STRIP, i, vertices.length);
+	}
 }
