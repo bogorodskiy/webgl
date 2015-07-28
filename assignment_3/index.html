@@ -1,0 +1,78 @@
+<html>
+	<head>
+		<script id="vertex-shader" type="x-shader/x-vertex">
+			attribute vec4 vPosition;
+
+			void
+			main()
+			{
+				gl_Position = vPosition;
+			}
+		</script>
+
+		<script id="fragment-shader" type="x-shader/x-fragment">
+
+			precision mediump float;
+
+			void
+			main()
+			{
+				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+			}
+		</script>
+
+		<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+		<script type="text/javascript" src="../Common/initShaders.js"></script>
+		<script type="text/javascript" src="../Common/MV.js"></script>
+		<script type="text/javascript" src="script.js"></script>
+		<script type="text/javascript" src="jscolor.js"></script>
+		<script type="text/javascript" src="../jquery/jquery-1.11.3.js"></script>
+
+		<link rel="stylesheet" href="jquery-ui/jquery-ui.css">
+		<link rel="stylesheet" href="jquery-ui/jquery-ui.theme.css">
+		<script src="jquery-ui/jquery-ui.js"></script>
+		
+		<style>
+			body{
+				font: 80% "Trebuchet MS", sans-serif;
+			}
+		</style>
+	</head>
+	<body bgcolor="#666666">
+		<font size="15"> WEBGL CAD Project v1.0</font>
+		<div style="width: 100%;">
+			<div style="border:1px solid black;width:600px; float: left;" >
+				<canvas id="gl-canvas" width="600" height="600">
+					Canvas element is not supported
+				</canvas>
+			</div>
+			<div id="controls" style="padding-left:15px; float: left;">
+				<div style="padding-bottom:15px;">
+					<form style="margin-top: 1em;">
+						<div id="radioset">
+							<input type="radio" id="sphereSelector" name="radio"><label for="sphereSelector">Sphere</label>
+							<input type="radio" id="coneSelector" name="radio" checked="checked"><label for="coneSelector">Cone</label>
+							<input type="radio" id="cylinderSelector" name="radio"><label for="cylinderSelector">Cylinder</label>
+						</div>
+					</form>
+				</div>
+				<div style="padding-bottom:15px; padding-left:2px">
+					<font size="4">Shape color:</font>
+					<input id="colorPicker" class="color" value="66ff00"></input>
+				</div>
+				<div>
+					<button style="width:245px" class="button">Add</button>
+				</div>
+			</div>
+		</div>
+	<script>
+
+		$( ".button" ).button();
+		$( "#radioset" ).buttonset();
+		$( "#tabs" ).tabs();
+		$( ".slider" ).slider();
+		$( "#tooltip" ).tooltip();
+
+	</script>
+	</body>
+</html>

@@ -192,8 +192,6 @@ function getColor()
 
 function onMouseDown(event)
 {
-	console.log("mouse down");
-
 	$(document).on('mouseup', onMouseUp);
 	$('#gl-canvas').on('mousemove', onMouseMove);
 	
@@ -208,7 +206,6 @@ function onMouseDown(event)
 
 function onMouseUp(event)
 {
-	console.log("mouse up");
 	$('#gl-canvas').off('mousemove', onMouseMove);
 }
 
