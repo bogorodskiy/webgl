@@ -1,3 +1,5 @@
+// thanks to http://learningwebgl.com/blog/
+
 var SHAPE_SPHERE = "sphere";
 var SHAPE_CONE = "cone";
 var SHAPE_CYLINDER = "sphere";

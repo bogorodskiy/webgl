@@ -120,8 +120,13 @@ function addSegment()
 	render();
 }
 
-function addVertex(vertex, color, store = true)
+function addVertex(vertex, color, store)
 {
+	if (store == null)
+	{
+		store = true;
+	}
+	
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferId);
 	gl.bufferSubData(gl.ARRAY_BUFFER, sizeof['vec2'] * index, flatten(vertex));
 
