@@ -1,0 +1,59 @@
+<html>
+
+	<script id="vertex-shader" type="x-shader/x-vertex">
+		attribute vec4 vPosition;
+		attribute vec4 vColor;
+
+		varying vec4 fColor;
+
+
+		void
+		main()
+		{
+			gl_Position = vPosition;
+			fColor = vColor;
+		}
+	</script>
+
+	<script id="fragment-shader" type="x-shader/x-fragment">
+
+		precision mediump float;
+
+		varying vec4 fColor;
+		void
+		main()
+		{
+			gl_FragColor = fColor;
+		}
+	</script>
+
+	<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+	<script type="text/javascript" src="../Common/initShaders.js"></script>
+	<script type="text/javascript" src="../Common/MV.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+	<script type="text/javascript" src="jscolor.js"></script>
+	<script type="text/javascript" src="../jquery/jquery-1.11.3.js"></script>
+	<script type="text/javascript" src="../jquery/jquery-ui.js"></script>
+	<link rel="stylesheet" href="../jquery/jquery-ui.css">
+	<body>
+		<div id="controls" style="padding-top:15px">
+			<div>
+				<input id="sizeSlider" type="range" min="1" max="29" step="1" value="3" > Brush size(pixels)</input>
+				<span id="brushSizeField">1</span>
+			</div>
+			<div style="padding-top:15px">
+				<input id="colorPicker" class="color" value="66ff00"> Color</input>
+			</div>
+			<div style="padding-top:15px; padding-bottom:15px">
+				<button id="clearButton">Clear</button>
+			</div>
+		</div>
+
+		<div style="border:1px solid black;width:512px" >
+			<canvas id="gl-canvas" width="512" height="512">
+				Canvas element is not supported
+			</canvas>
+		</div>
+
+	</body>
+</html>
