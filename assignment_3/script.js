@@ -12,6 +12,18 @@ window.onload = function init()
 	canvasBounds = canvas.getBoundingClientRect();
 	currentColor = getColor();
 	$("#addButton").on("click", onAddButtonClick);
+	
+	$("#xSlider").on("slidechange", onXChange);
+	onXChange();
+	$("#ySlider").on("slidechange", onYChange);
+	onYChange();
+	$("#zSlider").on("slidechange", onZChange);
+	onZChange();
+	
+	$("#translationSelector").click(onOperationTypeChange);
+	$("#rotationSelector").click(onOperationTypeChange);
+	$("#scaleSelector").click(onOperationTypeChange);
+	onOperationTypeChange();
 
 	gl = WebGLUtils.setupWebGL(canvas);
 	if (!gl) 
@@ -67,6 +79,40 @@ function onAddButtonClick(event)
 	shapes[shapes.length] = sphere;
 	
 	render();
+}
+
+function onOperationTypeChange(event)
+{
+	var checkedId = $("#operationSelector :radio:checked").attr('id');
+	
+	if (checkedId == "translationSelector")
+	{
+
+	}
+	else if(checkedId == "rotationSelector")
+	{
+
+	}
+	else if(checkedId == "scaleSelector")
+	{
+
+	}
+}
+
+function onXChange(event, ui)
+{
+	var x = $("#xSlider").slider("option", "value");
+	$("#xCaption").text("X = " + x);
+}
+function onYChange(event, ui)
+{
+	var y = $("#ySlider").slider("option", "value");
+	$("#yCaption").text("Y = " + y);
+}
+function onZChange(event, ui)
+{
+	var z = $("#zSlider").slider("option", "value");
+	$("#zCaption").text("Z = " + z);	
 }
 
 function render() 

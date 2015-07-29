@@ -50,28 +50,49 @@
 			<div id="controls" style="padding-left:15px; float: left;">
 				<div style="padding-bottom:15px;">
 					<form style="margin-top: 1em;">
-						<div id="radioset">
+						<div class="radioset">
 							<input type="radio" id="sphereSelector" name="radio"><label for="sphereSelector">Sphere</label>
 							<input type="radio" id="coneSelector" name="radio" checked="checked"><label for="coneSelector">Cone</label>
 							<input type="radio" id="cylinderSelector" name="radio"><label for="cylinderSelector">Cylinder</label>
 						</div>
 					</form>
 				</div>
-				<div style="padding-bottom:15px; padding-left:2px">
+				<div style="padding-bottom:15px;">
 					<font size="4">Shape color:</font>
 					<input id="colorPicker" class="color" value="66ff00"></input>
 				</div>
 				<div>
 					<button id="addButton" style="width:245px" class="button">Add</button>
 				</div>
+				
+				<div style="padding-bottom:5px;padding-top:20px">
+					<form style="margin-top: 1em;">
+						<div id="operationSelector" class="radioset">
+							<input type="radio" id="translationSelector" name="radio"><label for="translationSelector">Translation</label>
+							<input type="radio" id="rotationSelector" name="radio" checked="checked"><label for="rotationSelector">Rotation</label>
+							<input type="radio" id="scaleSelector" name="radio"><label for="scaleSelector">Scale</label>
+						</div>
+					</form>
+				</div>
+				
+				<div>
+					<font id="xCaption" size="3">X = 0</font>
+					<div id="xSlider" class="slider" style="margin-top:5px"></div>
+					<br/>
+					<font id="yCaption" size="3">Y = 0</font>
+					<div id="ySlider" class="slider" style="margin-top:5px"></div>
+					<br/>
+					<font id="zCaption" size="3">Z = 0</font>
+					<div id="zSlider" class="slider" style="margin-top:5px"></div>
+				</div>
 			</div>
 		</div>
 	<script>
 
 		$( ".button" ).button();
-		$( "#radioset" ).buttonset();
+		$( ".radioset" ).buttonset();
 		$( "#tabs" ).tabs();
-		$( ".slider" ).slider();
+		$( ".slider" ).slider({min:0, max:1, step:0.1});
 		$( "#tooltip" ).tooltip();
 
 	</script>
