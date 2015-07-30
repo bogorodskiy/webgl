@@ -2,7 +2,7 @@
 
 var SHAPE_SPHERE = "sphere";
 var SHAPE_CONE = "cone";
-var SHAPE_CYLINDER = "sphere";
+var SHAPE_CYLINDER = "cylinder";
 
 var SHAPE_TYPE = "type";
 var SHAPE_VERTICES = "vertices";
@@ -31,8 +31,9 @@ var SHAPE_SCALE_X = "shape_scale_x";
 var SHAPE_SCALE_Y = "shape_scale_y";
 var SHAPE_SCALE_Z = "shape_scale_z";
 
-function createSphere(radius, color)
+function createSphere(color)
 {
+	var radius = 1;
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
@@ -72,7 +73,7 @@ function createSphere(radius, color)
 			textureCoordinates[textureCoordinates.length] = v;
 			
 			colors = colors.concat(color);
-			frameColors = frameColors.concat([1.0, 1.0, 1.0, 1.0]);
+			frameColors = frameColors.concat([1.0 - color[0], 1.0- color[1], 1.0- color[2], 1.0]);
 		}
 	}
 	

@@ -2,15 +2,20 @@
 var canvas = null;
 var canvasBounds = null;
 var gl;
-var currentColor = null;
 var shapes = [];
 var program = null;
+var currentShapeType = null;
+var currentShape = null;
+var createFunctionByType = {};
 
 window.onload = function init() 
 {
+	createFunctionByType[SHAPE_SPHERE] = createSphere;
+	createFunctionByType[SHAPE_CONE] = null;
+	createFunctionByType[SHAPE_CYLINDER] = null;
+	
 	canvas = document.getElementById("gl-canvas");
 	canvasBounds = canvas.getBoundingClientRect();
-	currentColor = getColor();
 	$("#addButton").on("click", onAddButtonClick);
 	
 	$("#xSlider").on("slidechange", onXChange);
@@ -25,6 +30,12 @@ window.onload = function init()
 	$("#scaleSelector").click(onOperationTypeChange);
 	onOperationTypeChange();
 
+	$("#sphereSelector").click(onShapeTypeChange);
+	$("#coneSelector").click(onShapeTypeChange);
+	$("#cylinderSelector").click(onShapeTypeChange);
+	onShapeTypeChange();
+
+	
 	gl = WebGLUtils.setupWebGL(canvas);
 	if (!gl) 
 	{ 
@@ -64,38 +75,46 @@ function getColor()
 
 function onAddButtonClick(event)
 {
-	var sphere = createSphere(1, getColor());
+	var createFunction = createFunctionByType[currentShapeType];
+	if (createFunction == null)
+	{
+		console.log("No function for shape type", currentShapeType);
+		return;
+	}
+	
+	var shape = createFunction(getColor());
 	
 	var vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_VERTICES]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(shape[SHAPE_VERTICES]), gl.STATIC_DRAW);
 	vertexBuffer.vertexSize = 3;
-	vertexBuffer.numItems = sphere[SHAPE_VERTICES].length / 3;
+	vertexBuffer.numItems = shape[SHAPE_VERTICES].length / 3;
 	
 	var indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(sphere[SHAPE_INDICES]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(shape[SHAPE_INDICES]), gl.STATIC_DRAW);
 	indexBuffer.indexSize = 1;
-	indexBuffer.numItems = sphere[SHAPE_INDICES].length;
+	indexBuffer.numItems = shape[SHAPE_INDICES].length;
 
 	var colorBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_COLORS]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(shape[SHAPE_COLORS]), gl.STATIC_DRAW);
 	colorBuffer.colorSize = 4;
-	colorBuffer.numItems = sphere[SHAPE_COLORS].length;
+	colorBuffer.numItems = shape[SHAPE_COLORS].length;
 
 	var frameColorBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, frameColorBuffer);
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_FRAME_COLORS]), gl.STATIC_DRAW);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(shape[SHAPE_FRAME_COLORS]), gl.STATIC_DRAW);
 	frameColorBuffer.colorSize = 4;
-	frameColorBuffer.numItems = sphere[SHAPE_FRAME_COLORS].length;
+	frameColorBuffer.numItems = shape[SHAPE_FRAME_COLORS].length;
 	
-	sphere[SHAPE_VERTEX_BUFFER] = vertexBuffer;
-	sphere[SHAPE_INDEX_BUFFER] = indexBuffer;
-	sphere[SHAPE_COLOR_BUFFER] = colorBuffer;
-	sphere[SHAPE_FRAME_COLOR_BUFFER] = frameColorBuffer;
+	shape[SHAPE_VERTEX_BUFFER] = vertexBuffer;
+	shape[SHAPE_INDEX_BUFFER] = indexBuffer;
+	shape[SHAPE_COLOR_BUFFER] = colorBuffer;
+	shape[SHAPE_FRAME_COLOR_BUFFER] = frameColorBuffer;
 	
-	shapes[shapes.length] = sphere;
+	shapes[shapes.length] = shape;
+	currentShape = shape;
 	
 	render();
 }
@@ -115,6 +134,24 @@ function onOperationTypeChange(event)
 	else if(checkedId == "scaleSelector")
 	{
 
+	}
+}
+
+function onShapeTypeChange(event)
+{
+	var checkedId = $("#shapeSelector :radio:checked").attr('id');
+	
+	if (checkedId == "sphereSelector")
+	{
+		currentShapeType = SHAPE_SPHERE;
+	}
+	else if(checkedId == "coneSelector")
+	{
+		currentShapeType = SHAPE_CONE;
+	}
+	else if(checkedId == "cylinderSelector")
+	{
+		currentShapeType = SHAPE_CYLINDER;
 	}
 }
 
