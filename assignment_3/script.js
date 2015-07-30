@@ -33,6 +33,7 @@ window.onload = function init()
 
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.2, 0.2, 0.2, 1);
+	gl.enable(gl.DEPTH_TEST);
 	//
 	//  Load shaders and initialize attribute buffers
 	//
@@ -44,6 +45,9 @@ window.onload = function init()
 	
 	program.vColor = gl.getAttribLocation(program, "vColor");
 	gl.enableVertexAttribArray(program.vColor);
+	
+	program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
+	program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
 	
 	render();
 }
@@ -132,7 +136,7 @@ function onZChange(event, ui)
 
 function render() 
 {
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	var n = shapes.length;
 	for (var i = 0; i < n; i++)
@@ -149,17 +153,11 @@ function render()
 		var colorBuffer = shape[SHAPE_COLOR_BUFFER];
 		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		gl.vertexAttribPointer(program.vColor, colorBuffer.colorSize, gl.FLOAT, false, 0, 0);
-		
-		//console.log("color size", colorBuffer.colorSize);
-		
         gl.drawElements(gl.TRIANGLES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-		//gl.drawElements(gl.LINES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
-		//gl.drawElements(gl.LINE_LOOP, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 		
 		var frameColorBuffer = shape[SHAPE_FRAME_COLOR_BUFFER];
 		gl.bindBuffer(gl.ARRAY_BUFFER, frameColorBuffer);
 		gl.vertexAttribPointer(program.vColor, frameColorBuffer.colorSize, gl.FLOAT, false, 0, 0);
-		
 		gl.drawElements(gl.LINE_LOOP, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	}
 }

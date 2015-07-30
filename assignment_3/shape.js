@@ -19,6 +19,18 @@ var SHAPE_NORMAL_BUFFER = "normal_buffer";
 var SHAPE_TEXTURE_COORD_BUFFER = "v_buffer";
 var SHAPE_INDEX_BUFFER = "index_buffer";
 
+var SHAPE_TRANSLATION_X = "shape_translation_x";
+var SHAPE_TRANSLATION_Y = "shape_translation_y";
+var SHAPE_TRANSLATION_Z = "shape_translation_z";
+
+var SHAPE_ROTATION_X = "shape_rotation_x";
+var SHAPE_ROTATION_Y = "shape_rotation_y";
+var SHAPE_ROTATION_Z = "shape_rotation_z";
+
+var SHAPE_SCALE_X = "shape_scale_x";
+var SHAPE_SCALE_Y = "shape_scale_y";
+var SHAPE_SCALE_Z = "shape_scale_z";
+
 function createSphere(radius, color)
 {
 	var vertices = [];
@@ -80,7 +92,7 @@ function createSphere(radius, color)
 		}
 	}
 	
-	var result = {};
+	var result = createShape();
 	result[SHAPE_TYPE] = SHAPE_SPHERE;
 	result[SHAPE_VERTICES] = vertices;
 	result[SHAPE_INDICES] = indices;
@@ -90,4 +102,22 @@ function createSphere(radius, color)
 	result[SHAPE_FRAME_COLORS] = frameColors;
 	return result;
 }
+
+function createShape()
+{
+	var result = {};
 	
+	result[SHAPE_TRANSLATION_X] = 0.0;
+	result[SHAPE_TRANSLATION_Y] = 0.0;
+	result[SHAPE_TRANSLATION_Z] = 0.0;
+
+	result[SHAPE_ROTATION_X] = 0.0;
+	result[SHAPE_ROTATION_Y] = 0.0;
+	result[SHAPE_ROTATION_Z] = 0.0;
+
+	result[SHAPE_SCALE_X] = 1.0;
+	result[SHAPE_SCALE_Y] = 1.0;
+	result[SHAPE_SCALE_Z] = 1.0;
+	
+	return result;
+}
