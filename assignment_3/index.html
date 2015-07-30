@@ -2,11 +2,15 @@
 	<head>
 		<script id="vertex-shader" type="x-shader/x-vertex">
 			attribute vec4 vPosition;
+			attribute vec4 vColor;
 
+			varying vec4 fColor;
+			
 			void
 			main()
 			{
 				gl_Position = vPosition;
+				fColor = vColor;
 			}
 		</script>
 
@@ -14,10 +18,12 @@
 
 			precision mediump float;
 
+			varying vec4 fColor;
+			
 			void
 			main()
 			{
-				gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+				gl_FragColor = fColor;
 			}
 		</script>
 
@@ -76,13 +82,13 @@
 				</div>
 				
 				<div>
-					<font id="xCaption" size="3">X = 0</font>
+					<font id="xCaption" size="3" color="#FF0000">X = 0</font>
 					<div id="xSlider" class="slider" style="margin-top:5px"></div>
 					<br/>
-					<font id="yCaption" size="3">Y = 0</font>
+					<font id="yCaption" size="3" color="#00FF00">Y = 0</font>
 					<div id="ySlider" class="slider" style="margin-top:5px"></div>
 					<br/>
-					<font id="zCaption" size="3">Z = 0</font>
+					<font id="zCaption" size="3" color="#0000FF">Z = 0</font>
 					<div id="zSlider" class="slider" style="margin-top:5px"></div>
 				</div>
 			</div>

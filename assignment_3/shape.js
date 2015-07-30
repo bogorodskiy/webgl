@@ -9,18 +9,24 @@ var SHAPE_VERTICES = "vertices";
 var SHAPE_INDICES = "indices";
 var SHAPE_NORMALS = "normals";
 var SHAPE_TEXTURE_COORDINATES = "texture_coordinates";
+var SHAPE_COLORS = "colors";
+var SHAPE_FRAME_COLORS = "frame_colors";
 
 var SHAPE_VERTEX_BUFFER = "vertex_buffer";
+var SHAPE_COLOR_BUFFER = "color_buffer";
+var SHAPE_FRAME_COLOR_BUFFER = "frame_color_buffer";
 var SHAPE_NORMAL_BUFFER = "normal_buffer";
 var SHAPE_TEXTURE_COORD_BUFFER = "v_buffer";
 var SHAPE_INDEX_BUFFER = "index_buffer";
 
-function createSphere(radius = 2)
+function createSphere(radius, color)
 {
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
 	var indices = [];
+	var colors = [];
+	var frameColors = [];
 	var latitudeBands = 30;
 	var longitudeBands = 30;
 	
@@ -50,13 +56,11 @@ function createSphere(radius = 2)
 			normals[normals.length] = y;
 			normals[normals.length] = z;
 			
-			//console.log("x", x);
-			//console.log("y", y);
-			//console.log("z", z);
-			//console.log('');
-			
 			textureCoordinates[textureCoordinates.length] = u;
 			textureCoordinates[textureCoordinates.length] = v;
+			
+			colors = colors.concat(color);
+			frameColors = frameColors.concat([1.0, 1.0, 1.0, 1.0]);
 		}
 	}
 	
@@ -82,6 +86,8 @@ function createSphere(radius = 2)
 	result[SHAPE_INDICES] = indices;
 	result[SHAPE_NORMALS] = normals;
 	result[SHAPE_TEXTURE_COORDINATES] = textureCoordinates;
+	result[SHAPE_COLORS] = colors;
+	result[SHAPE_FRAME_COLORS] = frameColors;
 	return result;
 }
 	

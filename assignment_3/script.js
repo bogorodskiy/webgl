@@ -39,10 +39,11 @@ window.onload = function init()
 	program = initShaders(gl, "vertex-shader", "fragment-shader");
 	gl.useProgram(program);
 	
-	var vPosition = gl.getAttribLocation(program, "vPosition");
-	//gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-	gl.enableVertexAttribArray(vPosition);
-	program.vPosition = vPosition;
+	program.vPosition = gl.getAttribLocation(program, "vPosition");
+	gl.enableVertexAttribArray(program.vPosition);
+	
+	program.vColor = gl.getAttribLocation(program, "vColor");
+	gl.enableVertexAttribArray(program.vColor);
 	
 	render();
 }
@@ -59,22 +60,36 @@ function getColor()
 
 function onAddButtonClick(event)
 {
-	var sphere = createSphere(1);
+	var sphere = createSphere(1, getColor());
 	
 	var vertexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_VERTICES]), gl.STATIC_DRAW);
-	vertexBuffer.itemSize = 3;
+	vertexBuffer.vertexSize = 3;
 	vertexBuffer.numItems = sphere[SHAPE_VERTICES].length / 3;
 	
 	var indexBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(sphere[SHAPE_INDICES]), gl.STATIC_DRAW);
-	indexBuffer.itemSize = 1;
+	indexBuffer.indexSize = 1;
 	indexBuffer.numItems = sphere[SHAPE_INDICES].length;
+
+	var colorBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_COLORS]), gl.STATIC_DRAW);
+	colorBuffer.colorSize = 4;
+	colorBuffer.numItems = sphere[SHAPE_COLORS].length;
+
+	var frameColorBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, frameColorBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphere[SHAPE_FRAME_COLORS]), gl.STATIC_DRAW);
+	frameColorBuffer.colorSize = 4;
+	frameColorBuffer.numItems = sphere[SHAPE_FRAME_COLORS].length;
 	
 	sphere[SHAPE_VERTEX_BUFFER] = vertexBuffer;
 	sphere[SHAPE_INDEX_BUFFER] = indexBuffer;
+	sphere[SHAPE_COLOR_BUFFER] = colorBuffer;
+	sphere[SHAPE_FRAME_COLOR_BUFFER] = frameColorBuffer;
 	
 	shapes[shapes.length] = sphere;
 	
@@ -126,11 +141,25 @@ function render()
 		
 		var vertexBuffer = shape[SHAPE_VERTEX_BUFFER];
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.vertexAttribPointer(program.vPosition, vertexBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(program.vPosition, vertexBuffer.vertexSize, gl.FLOAT, false, 0, 0);
 
 		var indexBuffer = shape[SHAPE_INDEX_BUFFER];
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		
+		var colorBuffer = shape[SHAPE_COLOR_BUFFER];
+		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+		gl.vertexAttribPointer(program.vColor, colorBuffer.colorSize, gl.FLOAT, false, 0, 0);
+		
+		//console.log("color size", colorBuffer.colorSize);
+		
         gl.drawElements(gl.TRIANGLES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 		//gl.drawElements(gl.LINES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+		//gl.drawElements(gl.LINE_LOOP, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+		
+		var frameColorBuffer = shape[SHAPE_FRAME_COLOR_BUFFER];
+		gl.bindBuffer(gl.ARRAY_BUFFER, frameColorBuffer);
+		gl.vertexAttribPointer(program.vColor, frameColorBuffer.colorSize, gl.FLOAT, false, 0, 0);
+		
+		gl.drawElements(gl.LINE_LOOP, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 	}
 }
