@@ -129,9 +129,9 @@ function createShape()
 	result[SHAPE_SCALE_Y] = 1.0;
 	result[SHAPE_SCALE_Z] = 1.0;
 	
-	result.translation = [ 0.0, 0.0, 0.0, 0.0,
-						   0.0, 0.0, 0.0, 0.0,
-						   0.0, 0.0, 0.0, 0.0,
+	result.translation = [ 1.0, 0.0, 0.0, 0.0,
+						   0.0, 1.0, 0.0, 0.0,
+						   0.0, 0.0, 1.0, 0.0,
 						   0.0, 0.0, 0.0, 1.0];
 						
 	result.rotationX = [ 0.0, 0.0, 0.0, 0.0,

@@ -63,8 +63,7 @@ window.onload = function init()
 	program.vColor = gl.getAttribLocation(program, "vColor");
 	gl.enableVertexAttribArray(program.vColor);
 	
-	program.pMatrixUniform = gl.getUniformLocation(program, "uPMatrix");
-	program.mvMatrixUniform = gl.getUniformLocation(program, "uMVMatrix");
+	program.vTranslationMatrix = gl.getUniformLocation(program, "vTranslationMatrix");
 	
 	render();
 }
@@ -133,25 +132,50 @@ function updateSliders()
 
 function updateShapeProperties()
 {
+	if (selectedShape == null)
+	{
+		return;
+	}
+	
 	if (currentOperation == OPERATION_TRANSLATION)
 	{
-		shape.setTranslation();
+		selectedShape.setTranslation( Number( $("#xSlider").slider("option", "value") ),
+							  Number( $("#ySlider").slider("option", "value") ),
+							  Number( $("#zSlider").slider("option", "value") ));
 	}
 	else if (currentOperation == OPERATION_ROTATION)
 	{
-		shape.setRotationX();
-		shape.setRotationY();
-		shape.setRotationZ();
+		selectedShape.setRotationX( Number( $("#xSlider").slider("option", "value") ));
+		selectedShape.setRotationY( Number( $("#ySlider").slider("option", "value") ));
+		selectedShape.setRotationZ( Number( $("#zSlider").slider("option", "value") ));
 	}
 	else if (currentOperation == OPERATION_SCALE)
 	{
-		shape.setScale();
+		selectedShape.setScale( Number( $("#xSlider").slider("option", "value") ),
+							  Number( $("#ySlider").slider("option", "value") ),
+							  Number( $("#zSlider").slider("option", "value") ) );
 	}
+	
+	render();
 }
 
 function degreeToRadians(value)
 {
 	return value * Math.PI / 180.0;
+}
+
+function transposeMat4(value)
+{
+	var result = [];
+	for (var i = 0; i < 4; i++)
+	{
+		for (var j = 0; j < 4; j++)
+		{
+			var index = i + j * 4;
+			result[result.length] = value[index];
+		}
+	}
+	return new Float32Array(result);
 }
 
 function onAddButtonClick(event)
@@ -242,7 +266,7 @@ function onShapeTypeChange(event)
 
 function onXChange(event, ui)
 {
-	var userInteraction = (event != null && event.view == null);
+	var userInteraction = (event != null && event.view != null);
 
 	var x = $("#xSlider").slider("option", "value");
 	$("#xCaption").text("X = " + x);
@@ -253,7 +277,7 @@ function onXChange(event, ui)
 }
 function onYChange(event, ui)
 {
-	var userInteraction = (event != null && event.view == null);
+	var userInteraction = (event != null && event.view != null);
 	
 	var y = $("#ySlider").slider("option", "value");
 	$("#yCaption").text("Y = " + y);
@@ -264,7 +288,7 @@ function onYChange(event, ui)
 }
 function onZChange(event, ui)
 {
-	var userInteraction = (event != null && event.view == null);
+	var userInteraction = (event != null && event.view != null);
 	
 	var z = $("#zSlider").slider("option", "value");
 	$("#zCaption").text("Z = " + z);
@@ -293,6 +317,10 @@ function render()
 		var colorBuffer = shape[SHAPE_COLOR_BUFFER];
 		gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 		gl.vertexAttribPointer(program.vColor, colorBuffer.colorSize, gl.FLOAT, false, 0, 0);
+		
+		var translationMatrix = transposeMat4(shape.translation);
+		gl.uniformMatrix4fv(program.vTranslationMatrix, false, translationMatrix);
+		
         gl.drawElements(gl.TRIANGLES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 		
 		var frameColorBuffer = shape[SHAPE_FRAME_COLOR_BUFFER];

@@ -13,8 +13,8 @@
 			void
 			main()
 			{
-				//gl_Position = uPMatrix * uMVMatrix * vec4(vPosition, 1.0);
-				gl_Position = vPosition;
+				gl_Position = vTranslationMatrix * vPosition;
+				//gl_Position = vPosition;
 				fColor = vColor;
 			}
 		</script>
