@@ -4,6 +4,7 @@ var SHAPE_SPHERE = "sphere";
 var SHAPE_CONE = "cone";
 var SHAPE_CYLINDER = "cylinder";
 
+var SHAPE_ID = "shape_id";
 var SHAPE_TYPE = "type";
 var SHAPE_VERTICES = "vertices";
 var SHAPE_INDICES = "indices";
@@ -31,9 +32,13 @@ var SHAPE_SCALE_X = "shape_scale_x";
 var SHAPE_SCALE_Y = "shape_scale_y";
 var SHAPE_SCALE_Z = "shape_scale_z";
 
+var spheresCount = 0;
+var conesCount = 0;
+var cylindersCount = 0;
+
 function createSphere(color)
 {
-	var radius = 1;
+	var radius = 0.5;
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
@@ -93,7 +98,10 @@ function createSphere(color)
 		}
 	}
 	
+	spheresCount++;
+	
 	var result = createShape();
+	result[SHAPE_ID] = SHAPE_SPHERE + "_" + spheresCount.toString();
 	result[SHAPE_TYPE] = SHAPE_SPHERE;
 	result[SHAPE_VERTICES] = vertices;
 	result[SHAPE_INDICES] = indices;
@@ -101,6 +109,7 @@ function createSphere(color)
 	result[SHAPE_TEXTURE_COORDINATES] = textureCoordinates;
 	result[SHAPE_COLORS] = colors;
 	result[SHAPE_FRAME_COLORS] = frameColors;
+
 	return result;
 }
 
@@ -119,6 +128,88 @@ function createShape()
 	result[SHAPE_SCALE_X] = 1.0;
 	result[SHAPE_SCALE_Y] = 1.0;
 	result[SHAPE_SCALE_Z] = 1.0;
+	
+	result.translation = [ 0.0, 0.0, 0.0, 0.0,
+						   0.0, 0.0, 0.0, 0.0,
+						   0.0, 0.0, 0.0, 0.0,
+						   0.0, 0.0, 0.0, 1.0];
+						
+	result.rotationX = [ 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 1.0];
+						 
+	result.rotationY = [ 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 1.0];
+						 
+	result.rotationZ = [ 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 0.0,
+						 0.0, 0.0, 0.0, 1.0];
+						
+	result.scale  = [ 1.0, 0.0, 0.0, 0.0,
+					  0.0, 1.0, 0.0, 0.0,
+					  0.0, 0.0, 1.0, 0.0,
+					  0.0, 0.0, 0.0, 1.0];
+	
+	result.setTranslation = function(x, y, z)
+	{
+		result.translation[3] = x;
+		result.translation[7] = y;
+		result.translation[11] = z;
+		
+		result[SHAPE_TRANSLATION_X] = x;
+		result[SHAPE_TRANSLATION_Y] = y;
+		result[SHAPE_TRANSLATION_Z] = z;
+	}
+	
+	result.setRotationX = function(value)
+	{
+		result.rotationZ[0] = 1;
+		result.rotationZ[5] = Math.cos(value);
+		result.rotationZ[6] = -Math.sin(value);
+		result.rotationZ[9] = Math.sin(value);
+		result.rotationZ[10] = Math.cos(value);
+		
+		result[SHAPE_ROTATION_X] = value;
+	}
+
+	result.setRotationY = function(value)
+	{
+		result.rotationZ[0] = Math.cos(value);
+		result.rotationZ[2] = Math.sin(value);
+		result.rotationZ[5] = 1;
+		result.rotationZ[8] = -Math.sin(value);
+		result.rotationZ[10] = Math.cos(value);
+		
+		result[SHAPE_ROTATION_Y] = value;
+	}
+
+	result.setRotationZ = function(value)
+	{
+		result.rotationZ[0] = Math.cos(value);
+		result.rotationZ[1] = -Math.sin(value);
+		result.rotationZ[4] = Math.sin(value);
+		result.rotationZ[5] = Math.cos(value);
+		result.rotationZ[10] = 1;
+		
+		result[SHAPE_ROTATION_Z] = value;
+	}
+	
+	result.setScale = function(x, y, z)
+	{
+		result.scale[0] = x;
+		result.scale[4] = y;
+		result.scale[10] = z;
+		
+		result[SHAPE_SCALE_X] = x;
+		result[SHAPE_SCALE_Y] = y;
+		result[SHAPE_SCALE_Z] = z;
+	}
+	
+	// NOTE transpose matrices for webgl
 	
 	return result;
 }

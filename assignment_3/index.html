@@ -4,8 +4,9 @@
 			attribute vec4 vPosition;
 			attribute vec4 vColor;
 
-			uniform mat4 uMVMatrix;
-			uniform mat4 uPMatrix;
+			uniform mat4 vTranslationMatrix;
+			uniform mat4 vRotationMatrix;
+			uniform mat4 vScaleMatrix;
 			
 			varying vec4 fColor;
 			
@@ -75,7 +76,11 @@
 					<button id="addButton" style="width:245px" class="button">Add</button>
 				</div>
 				
-				<div style="padding-bottom:5px;padding-top:20px">
+				<div style="padding-top:15px;">
+					<font id="selectedShapeText" size="4">Selected shape: - </font>
+				</div>
+				
+				<div style="padding-bottom:5px;padding-top:15px">
 					<form style="margin-top: 1em;">
 						<div id="operationSelector" class="radioset">
 							<input type="radio" id="translationSelector" name="radio"><label for="translationSelector">Translation</label>

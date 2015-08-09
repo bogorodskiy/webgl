@@ -1,11 +1,17 @@
 "use strict";
+
+var OPERATION_TRANSLATION = 0;
+var OPERATION_ROTATION = 1;
+var OPERATION_SCALE = 2;
+
 var canvas = null;
 var canvasBounds = null;
 var gl;
 var shapes = [];
 var program = null;
+var currentOperation = OPERATION_TRANSLATION;
 var currentShapeType = null;
-var currentShape = null;
+var selectedShape = null;
 var createFunctionByType = {};
 
 window.onload = function init() 
@@ -73,6 +79,81 @@ function getColor()
 	return result;
 }
 
+function updateSliders()
+{
+	var xValue = 0.0;
+	var yValue = 0.0;
+	var zValue = 0.0;
+	var min = 0.0;
+	var max = 1.0;
+	var step = 0.1;
+	
+	if (selectedShape != null)
+	{
+		if (currentOperation == OPERATION_TRANSLATION)
+		{
+			xValue = selectedShape[SHAPE_TRANSLATION_X];
+			yValue = selectedShape[SHAPE_TRANSLATION_Y];
+			zValue = selectedShape[SHAPE_TRANSLATION_Z];
+		}
+		else if (currentOperation == OPERATION_ROTATION)
+		{
+			xValue = selectedShape[SHAPE_ROTATION_X];
+			yValue = selectedShape[SHAPE_ROTATION_Y];
+			zValue = selectedShape[SHAPE_ROTATION_Z];
+			
+			min = 0.0;
+			max = 360.0;
+			step = 1.0;
+		}
+		else if (currentOperation == OPERATION_SCALE)
+		{
+			xValue = selectedShape[SHAPE_SCALE_X];
+			yValue = selectedShape[SHAPE_SCALE_Y];
+			zValue = selectedShape[SHAPE_SCALE_Z];
+		}
+	}
+	
+	$("#xSlider").slider("option", "min", min);
+	$("#xSlider").slider("option", "max", max);
+	$("#xSlider").slider("option", 'step', step);
+	
+	$("#ySlider").slider("option", "min", min);
+	$("#ySlider").slider("option", "max", max);
+	$("#ySlider").slider("option", 'step', step);
+	
+	$("#zSlider").slider("option", "min", min);
+	$("#zSlider").slider("option", "max", max);
+	$("#zSlider").slider("option", 'step', step);
+
+	$("#xSlider").slider('value', xValue);
+	$("#ySlider").slider('value', yValue);
+	$("#zSlider").slider('value', zValue);
+}
+
+function updateShapeProperties()
+{
+	if (currentOperation == OPERATION_TRANSLATION)
+	{
+		shape.setTranslation();
+	}
+	else if (currentOperation == OPERATION_ROTATION)
+	{
+		shape.setRotationX();
+		shape.setRotationY();
+		shape.setRotationZ();
+	}
+	else if (currentOperation == OPERATION_SCALE)
+	{
+		shape.setScale();
+	}
+}
+
+function degreeToRadians(value)
+{
+	return value * Math.PI / 180.0;
+}
+
 function onAddButtonClick(event)
 {
 	var createFunction = createFunctionByType[currentShapeType];
@@ -114,8 +195,10 @@ function onAddButtonClick(event)
 	shape[SHAPE_FRAME_COLOR_BUFFER] = frameColorBuffer;
 	
 	shapes[shapes.length] = shape;
-	currentShape = shape;
+	selectedShape = shape;
+	$("#selectedShapeText").text("Selected shape: " + selectedShape[SHAPE_ID]);
 	
+	updateSliders();
 	render();
 }
 
@@ -125,16 +208,18 @@ function onOperationTypeChange(event)
 	
 	if (checkedId == "translationSelector")
 	{
-
+		currentOperation = OPERATION_TRANSLATION;
 	}
 	else if(checkedId == "rotationSelector")
 	{
-
+		currentOperation = OPERATION_ROTATION;
 	}
 	else if(checkedId == "scaleSelector")
 	{
-
+		currentOperation = OPERATION_SCALE;
 	}
+	
+	updateSliders();
 }
 
 function onShapeTypeChange(event)
@@ -157,18 +242,36 @@ function onShapeTypeChange(event)
 
 function onXChange(event, ui)
 {
+	var userInteraction = (event != null && event.view == null);
+
 	var x = $("#xSlider").slider("option", "value");
 	$("#xCaption").text("X = " + x);
+	if (userInteraction)
+	{
+		updateShapeProperties();
+	}
 }
 function onYChange(event, ui)
 {
+	var userInteraction = (event != null && event.view == null);
+	
 	var y = $("#ySlider").slider("option", "value");
 	$("#yCaption").text("Y = " + y);
+	if (userInteraction)
+	{
+		updateShapeProperties();
+	}
 }
 function onZChange(event, ui)
 {
+	var userInteraction = (event != null && event.view == null);
+	
 	var z = $("#zSlider").slider("option", "value");
-	$("#zCaption").text("Z = " + z);	
+	$("#zCaption").text("Z = " + z);
+	if (userInteraction)
+	{
+		updateShapeProperties();
+	}
 }
 
 function render() 
