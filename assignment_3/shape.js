@@ -129,30 +129,13 @@ function createShape()
 	result[SHAPE_SCALE_Y] = 1.0;
 	result[SHAPE_SCALE_Z] = 1.0;
 	
-	result.translation = [ 1.0, 0.0, 0.0, 0.0,
-						   0.0, 1.0, 0.0, 0.0,
-						   0.0, 0.0, 1.0, 0.0,
-						   0.0, 0.0, 0.0, 1.0];
+	result.translation = createIdentityMatrix();
 						
-	result.rotationX = [ 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 1.0];
-						 
-	result.rotationY = [ 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 1.0];
-						 
-	result.rotationZ = [ 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 0.0,
-						 0.0, 0.0, 0.0, 1.0];
+	result.rotationX = createIdentityMatrix();					 
+	result.rotationY = createIdentityMatrix();					 
+	result.rotationZ = createIdentityMatrix();
 						
-	result.scale  = [ 1.0, 0.0, 0.0, 0.0,
-					  0.0, 1.0, 0.0, 0.0,
-					  0.0, 0.0, 1.0, 0.0,
-					  0.0, 0.0, 0.0, 1.0];
+	result.scale  = createIdentityMatrix();
 	
 	result.setTranslation = function(x, y, z)
 	{
@@ -167,32 +150,41 @@ function createShape()
 	
 	result.setRotationX = function(value)
 	{
-		result.rotationZ[0] = 1;
-		result.rotationZ[5] = Math.cos(value);
-		result.rotationZ[6] = -Math.sin(value);
-		result.rotationZ[9] = Math.sin(value);
-		result.rotationZ[10] = Math.cos(value);
+		var cosv = Math.cos(value);
+		var sinv = Math.sin(value);
+		
+		result.rotationX[0] = 1;
+		result.rotationX[5] = cosv;
+		result.rotationX[6] = -sinv;
+		result.rotationX[9] = sinv;
+		result.rotationX[10] = cosv;
 		
 		result[SHAPE_ROTATION_X] = value;
 	}
 
 	result.setRotationY = function(value)
 	{
-		result.rotationZ[0] = Math.cos(value);
-		result.rotationZ[2] = Math.sin(value);
-		result.rotationZ[5] = 1;
-		result.rotationZ[8] = -Math.sin(value);
-		result.rotationZ[10] = Math.cos(value);
+		var cosv = Math.cos(value);
+		var sinv = Math.sin(value);
+		
+		result.rotationY[0] = cosv;
+		result.rotationY[2] = sinv;
+		result.rotationY[5] = 1;
+		result.rotationY[8] = -sinv;
+		result.rotationY[10] = cosv;
 		
 		result[SHAPE_ROTATION_Y] = value;
 	}
 
 	result.setRotationZ = function(value)
 	{
-		result.rotationZ[0] = Math.cos(value);
-		result.rotationZ[1] = -Math.sin(value);
-		result.rotationZ[4] = Math.sin(value);
-		result.rotationZ[5] = Math.cos(value);
+		var cosv = Math.cos(value);
+		var sinv = Math.sin(value);
+		
+		result.rotationZ[0] = cosv;
+		result.rotationZ[1] = -sinv;
+		result.rotationZ[4] = sinv;
+		result.rotationZ[5] = cosv;
 		result.rotationZ[10] = 1;
 		
 		result[SHAPE_ROTATION_Z] = value;
@@ -201,7 +193,7 @@ function createShape()
 	result.setScale = function(x, y, z)
 	{
 		result.scale[0] = x;
-		result.scale[4] = y;
+		result.scale[5] = y;
 		result.scale[10] = z;
 		
 		result[SHAPE_SCALE_X] = x;
@@ -212,4 +204,12 @@ function createShape()
 	// NOTE transpose matrices for webgl
 	
 	return result;
+}
+
+function createIdentityMatrix()
+{
+	return [ 1.0, 0.0, 0.0, 0.0,
+			 0.0, 1.0, 0.0, 0.0,
+			 0.0, 0.0, 1.0, 0.0,
+			 0.0, 0.0, 0.0, 1.0];
 }

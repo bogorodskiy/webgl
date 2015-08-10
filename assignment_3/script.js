@@ -51,6 +51,7 @@ window.onload = function init()
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.2, 0.2, 0.2, 1);
 	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
 	//
 	//  Load shaders and initialize attribute buffers
 	//
@@ -64,6 +65,10 @@ window.onload = function init()
 	gl.enableVertexAttribArray(program.vColor);
 	
 	program.vTranslationMatrix = gl.getUniformLocation(program, "vTranslationMatrix");
+	program.vRotationXMatrix = gl.getUniformLocation(program, "vRotationXMatrix");
+	program.vRotationYMatrix = gl.getUniformLocation(program, "vRotationYMatrix");
+	program.vRotationZMatrix = gl.getUniformLocation(program, "vRotationZMatrix");
+	program.vScaleMatrix = gl.getUniformLocation(program, "vScaleMatrix");
 	
 	render();
 }
@@ -94,6 +99,8 @@ function updateSliders()
 			xValue = selectedShape[SHAPE_TRANSLATION_X];
 			yValue = selectedShape[SHAPE_TRANSLATION_Y];
 			zValue = selectedShape[SHAPE_TRANSLATION_Z];
+			
+			min = -1;
 		}
 		else if (currentOperation == OPERATION_ROTATION)
 		{
@@ -110,6 +117,9 @@ function updateSliders()
 			xValue = selectedShape[SHAPE_SCALE_X];
 			yValue = selectedShape[SHAPE_SCALE_Y];
 			zValue = selectedShape[SHAPE_SCALE_Z];
+			
+			min = 0.1;
+			max = 3.0;
 		}
 	}
 	
@@ -145,9 +155,15 @@ function updateShapeProperties()
 	}
 	else if (currentOperation == OPERATION_ROTATION)
 	{
-		selectedShape.setRotationX( Number( $("#xSlider").slider("option", "value") ));
-		selectedShape.setRotationY( Number( $("#ySlider").slider("option", "value") ));
-		selectedShape.setRotationZ( Number( $("#zSlider").slider("option", "value") ));
+		var rotationX = Number( $("#xSlider").slider("option", "value") );
+		var rotationY = Number( $("#ySlider").slider("option", "value") );
+		var rotationZ = Number( $("#zSlider").slider("option", "value") );
+		
+		console.log("update rotation ", rotationX, rotationY, rotationZ);
+		
+		selectedShape.setRotationX( rotationX * Math.PI / 180 );
+		selectedShape.setRotationY( rotationY * Math.PI / 180 );
+		selectedShape.setRotationZ( rotationZ * Math.PI / 180 );
 	}
 	else if (currentOperation == OPERATION_SCALE)
 	{
@@ -320,6 +336,18 @@ function render()
 		
 		var translationMatrix = transposeMat4(shape.translation);
 		gl.uniformMatrix4fv(program.vTranslationMatrix, false, translationMatrix);
+
+		var rotationXMatrix = transposeMat4(shape.rotationX);
+		gl.uniformMatrix4fv(program.vRotationXMatrix, false, rotationXMatrix);
+
+		var rotationYMatrix = transposeMat4(shape.rotationY);
+		gl.uniformMatrix4fv(program.vRotationYMatrix, false, rotationYMatrix);
+		
+		var rotationZMatrix = transposeMat4(shape.rotationZ);
+		gl.uniformMatrix4fv(program.vRotationZMatrix, false, rotationZMatrix);
+		
+		var scaleMatrix = transposeMat4(shape.scale);
+		gl.uniformMatrix4fv(program.vScaleMatrix, false, scaleMatrix);
 		
         gl.drawElements(gl.TRIANGLES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 		

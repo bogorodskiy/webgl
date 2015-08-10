@@ -5,7 +5,9 @@
 			attribute vec4 vColor;
 
 			uniform mat4 vTranslationMatrix;
-			uniform mat4 vRotationMatrix;
+			uniform mat4 vRotationXMatrix;
+			uniform mat4 vRotationYMatrix;
+			uniform mat4 vRotationZMatrix;
 			uniform mat4 vScaleMatrix;
 			
 			varying vec4 fColor;
@@ -13,7 +15,7 @@
 			void
 			main()
 			{
-				gl_Position = vTranslationMatrix * vPosition;
+				gl_Position = vTranslationMatrix * vRotationZMatrix * vRotationYMatrix * vRotationXMatrix * vScaleMatrix *  vPosition;
 				//gl_Position = vPosition;
 				fColor = vColor;
 			}
