@@ -17,7 +17,7 @@ var createFunctionByType = {};
 window.onload = function init() 
 {
 	createFunctionByType[SHAPE_SPHERE] = createSphere;
-	createFunctionByType[SHAPE_CONE] = null;
+	createFunctionByType[SHAPE_CONE] = createCone;
 	createFunctionByType[SHAPE_CYLINDER] = null;
 	
 	canvas = document.getElementById("gl-canvas");
@@ -41,7 +41,6 @@ window.onload = function init()
 	$("#cylinderSelector").click(onShapeTypeChange);
 	onShapeTypeChange();
 
-	
 	gl = WebGLUtils.setupWebGL(canvas);
 	if (!gl) 
 	{ 
@@ -51,7 +50,7 @@ window.onload = function init()
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.2, 0.2, 0.2, 1);
 	gl.enable(gl.DEPTH_TEST);
-	gl.enable(gl.CULL_FACE);
+	//gl.enable(gl.CULL_FACE);
 	//
 	//  Load shaders and initialize attribute buffers
 	//
@@ -158,9 +157,7 @@ function updateShapeProperties()
 		var rotationX = Number( $("#xSlider").slider("option", "value") );
 		var rotationY = Number( $("#ySlider").slider("option", "value") );
 		var rotationZ = Number( $("#zSlider").slider("option", "value") );
-		
-		console.log("update rotation ", rotationX, rotationY, rotationZ);
-		
+
 		selectedShape.setRotationX( rotationX * Math.PI / 180 );
 		selectedShape.setRotationY( rotationY * Math.PI / 180 );
 		selectedShape.setRotationZ( rotationZ * Math.PI / 180 );

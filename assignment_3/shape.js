@@ -113,6 +113,91 @@ function createSphere(color)
 	return result;
 }
 
+function createCone(color)
+{
+	var radius = 0.5;
+	var height = 1;
+	var vertices = [];
+	var normals = [];
+	var textureCoordinates = [];
+	var indices = [];
+	var colors = [];
+	var frameColors = [];
+	var edgesCount = 30;
+	var yOffset = -0.5;
+
+	// bottom center
+	vertices[vertices.length] = 0;
+	vertices[vertices.length] = yOffset;
+	vertices[vertices.length] = 0;
+	colors = colors.concat(color);
+	frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+	
+	// bottom circle
+	for (var i = 0; i < edgesCount; i++)
+	{
+		var phi = i * 2 * Math.PI / edgesCount;
+		var sinPhi = Math.sin(phi);
+		var cosPhi = Math.cos(phi);
+		
+		var x = cosPhi;
+		var y = yOffset;
+		var z = sinPhi;
+		
+		vertices[vertices.length] = x * radius;
+		vertices[vertices.length] = y;
+		vertices[vertices.length] = z * radius;
+		
+		console.log("vertex:", vertices[vertices.length - 3], vertices[vertices.length - 2], vertices[vertices.length - 1]);
+		
+		colors = colors.concat(color);
+		frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+	}
+
+	console.log("vertices.length", vertices.length);
+	
+	// top point
+	vertices[vertices.length] = 0;
+	vertices[vertices.length] = height + yOffset;
+	vertices[vertices.length] = 0;
+	colors = colors.concat(color);
+	frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+	
+	var topVertexIndex = (vertices.length / 3) - 1;
+
+	for (i = 2; i <= edgesCount; i++)
+	{
+		indices[indices.length] = 0;
+		indices[indices.length] = i - 1;
+		indices[indices.length] = i;
+		
+		indices[indices.length] = i - 1;
+		indices[indices.length] = i;
+		indices[indices.length] = topVertexIndex;
+	}
+	indices[indices.length] = 0;
+	indices[indices.length] = edgesCount;
+	indices[indices.length] = 1;
+	
+	indices[indices.length] = edgesCount;
+	indices[indices.length] = 1;
+	indices[indices.length] = topVertexIndex;
+	
+	conesCount++;
+	
+	var result = createShape();
+	result[SHAPE_ID] = SHAPE_CONE + "_" + conesCount.toString();
+	result[SHAPE_TYPE] = SHAPE_CONE;
+	result[SHAPE_VERTICES] = vertices;
+	result[SHAPE_INDICES] = indices;
+	result[SHAPE_NORMALS] = normals;
+	result[SHAPE_TEXTURE_COORDINATES] = textureCoordinates;
+	result[SHAPE_COLORS] = colors;
+	result[SHAPE_FRAME_COLORS] = frameColors;
+
+	return result;
+}
+
 function createShape()
 {
 	var result = {};
@@ -129,12 +214,10 @@ function createShape()
 	result[SHAPE_SCALE_Y] = 1.0;
 	result[SHAPE_SCALE_Z] = 1.0;
 	
-	result.translation = createIdentityMatrix();
-						
+	result.translation = createIdentityMatrix();				
 	result.rotationX = createIdentityMatrix();					 
 	result.rotationY = createIdentityMatrix();					 
-	result.rotationZ = createIdentityMatrix();
-						
+	result.rotationZ = createIdentityMatrix();					
 	result.scale  = createIdentityMatrix();
 	
 	result.setTranslation = function(x, y, z)
