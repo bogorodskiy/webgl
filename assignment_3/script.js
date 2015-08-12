@@ -18,7 +18,7 @@ window.onload = function init()
 {
 	createFunctionByType[SHAPE_SPHERE] = createSphere;
 	createFunctionByType[SHAPE_CONE] = createCone;
-	createFunctionByType[SHAPE_CYLINDER] = null;
+	createFunctionByType[SHAPE_CYLINDER] = createCylinder;
 	
 	canvas = document.getElementById("gl-canvas");
 	canvasBounds = canvas.getBoundingClientRect();
@@ -50,7 +50,7 @@ window.onload = function init()
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.2, 0.2, 0.2, 1);
 	gl.enable(gl.DEPTH_TEST);
-	//gl.enable(gl.CULL_FACE);
+	gl.enable(gl.CULL_FACE);
 	//
 	//  Load shaders and initialize attribute buffers
 	//

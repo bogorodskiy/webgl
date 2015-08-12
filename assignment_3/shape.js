@@ -66,19 +66,15 @@ function createSphere(color)
 			var u = 1 - (longNumber / longitudeBands);
 			var v = 1 - (latNumber / latitudeBands);
 			
-			vertices[vertices.length] = x * radius;
-			vertices[vertices.length] = y * radius;
-			vertices[vertices.length] = z * radius;
+
 			
-			normals[normals.length] = x;
-			normals[normals.length] = y;
-			normals[normals.length] = z;
+			//normals[normals.length] = x;
+			//normals[normals.length] = y;
+			//normals[normals.length] = z;
 			
-			textureCoordinates[textureCoordinates.length] = u;
-			textureCoordinates[textureCoordinates.length] = v;
-			
-			colors = colors.concat(color);
-			frameColors = frameColors.concat([1.0 - color[0], 1.0- color[1], 1.0- color[2], 1.0]);
+			//textureCoordinates[textureCoordinates.length] = u;
+			//textureCoordinates[textureCoordinates.length] = v;
+			addVertex(vertices, x * radius, y * radius, z * radius, colors, frameColors, color);
 		}
 	}
 	
@@ -127,11 +123,7 @@ function createCone(color)
 	var yOffset = -0.5;
 
 	// bottom center
-	vertices[vertices.length] = 0;
-	vertices[vertices.length] = yOffset;
-	vertices[vertices.length] = 0;
-	colors = colors.concat(color);
-	frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+	addVertex(vertices, 0, yOffset, 0, colors, frameColors, color);
 	
 	// bottom circle
 	for (var i = 0; i < edgesCount; i++)
@@ -139,48 +131,121 @@ function createCone(color)
 		var phi = i * 2 * Math.PI / edgesCount;
 		var sinPhi = Math.sin(phi);
 		var cosPhi = Math.cos(phi);
-		
-		var x = cosPhi;
-		var y = yOffset;
-		var z = sinPhi;
-		
-		vertices[vertices.length] = x * radius;
-		vertices[vertices.length] = y;
-		vertices[vertices.length] = z * radius;
-		
-		console.log("vertex:", vertices[vertices.length - 3], vertices[vertices.length - 2], vertices[vertices.length - 1]);
-		
-		colors = colors.concat(color);
-		frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+		addVertex(vertices, cosPhi * radius, yOffset, sinPhi * radius, colors, frameColors, color);
 	}
 
-	console.log("vertices.length", vertices.length);
-	
 	// top point
-	vertices[vertices.length] = 0;
-	vertices[vertices.length] = height + yOffset;
-	vertices[vertices.length] = 0;
-	colors = colors.concat(color);
-	frameColors = frameColors.concat([1.0 - color[0], 1.0 - color[1], 1.0 - color[2], 1.0]);
+	addVertex(vertices, 0, height + yOffset, 0, colors, frameColors, color);
 	
 	var topVertexIndex = (vertices.length / 3) - 1;
 
 	for (i = 2; i <= edgesCount; i++)
 	{
-		indices[indices.length] = 0;
-		indices[indices.length] = i - 1;
 		indices[indices.length] = i;
+		indices[indices.length] = i - 1;
+		indices[indices.length] = 0;
 		
 		indices[indices.length] = i - 1;
 		indices[indices.length] = i;
 		indices[indices.length] = topVertexIndex;
 	}
-	indices[indices.length] = 0;
-	indices[indices.length] = edgesCount;
 	indices[indices.length] = 1;
+	indices[indices.length] = edgesCount;
+	indices[indices.length] = 0;
 	
 	indices[indices.length] = edgesCount;
 	indices[indices.length] = 1;
+	indices[indices.length] = topVertexIndex;
+	
+	conesCount++;
+	
+	var result = createShape();
+	result[SHAPE_ID] = SHAPE_CONE + "_" + conesCount.toString();
+	result[SHAPE_TYPE] = SHAPE_CONE;
+	result[SHAPE_VERTICES] = vertices;
+	result[SHAPE_INDICES] = indices;
+	result[SHAPE_NORMALS] = normals;
+	result[SHAPE_TEXTURE_COORDINATES] = textureCoordinates;
+	result[SHAPE_COLORS] = colors;
+	result[SHAPE_FRAME_COLORS] = frameColors;
+
+	return result;
+}
+
+function createCylinder(color)
+{
+	var radius = 0.5;
+	var height = 1;
+	var vertices = [];
+	var normals = [];
+	var textureCoordinates = [];
+	var indices = [];
+	var colors = [];
+	var frameColors = [];
+	var edgesCount = 30;
+	var yOffset = -0.5;
+
+	// bottom center
+	addVertex(vertices, 0, yOffset, 0, colors, frameColors, color);
+	
+	for (var i = 0; i < edgesCount; i++)
+	{
+		var phi = i * 2 * Math.PI / edgesCount;
+		var sinPhi = Math.sin(phi);
+		var cosPhi = Math.cos(phi);
+		
+		var x = cosPhi * radius;
+		var y = yOffset;
+		var z = sinPhi * radius;
+		
+		addVertex(vertices, x, y, z, colors, frameColors, color);
+		addVertex(vertices, x, y + height, z, colors, frameColors, color);
+	}
+
+	// top center
+	addVertex(vertices, 0, height + yOffset, 0, colors, frameColors, color);
+	
+	var topVertexIndex = (vertices.length / 3) - 1;
+	console.log("topVertexIndex", topVertexIndex);
+
+	for (i = 3; i <= edgesCount * 2; i++)
+	{
+		if (i % 2 != 0)
+		{
+			indices[indices.length] = i;
+			indices[indices.length] = i - 2;
+			indices[indices.length] = 0;
+		}
+		else
+		{
+			indices[indices.length] = i - 2;
+			indices[indices.length] = i - 3;
+			indices[indices.length] = i - 1;
+
+			indices[indices.length] = i - 2;
+			indices[indices.length] = i - 1;
+			indices[indices.length] = i;
+
+			indices[indices.length] = topVertexIndex;
+			indices[indices.length] = i - 2;
+			indices[indices.length] = i;
+		}
+	}
+
+	indices[indices.length] = i - 1;
+	indices[indices.length] = 1;
+	indices[indices.length] = 2;
+	
+	indices[indices.length] = 1;
+	indices[indices.length] = i - 1;
+	indices[indices.length] = i - 2;
+	
+	indices[indices.length] = 1;
+	indices[indices.length] = edgesCount * 2 - 1;
+	indices[indices.length] = 0;
+	
+	indices[indices.length] = edgesCount * 2;
+	indices[indices.length] = 2;
 	indices[indices.length] = topVertexIndex;
 	
 	conesCount++;
@@ -295,4 +360,23 @@ function createIdentityMatrix()
 			 0.0, 1.0, 0.0, 0.0,
 			 0.0, 0.0, 1.0, 0.0,
 			 0.0, 0.0, 0.0, 1.0];
+}
+
+function addVertex(vertices, x, y, z, colors, frameColors, color)
+{
+	vertices[vertices.length] = x;
+	vertices[vertices.length] = y;
+	vertices[vertices.length] = z;
+	var n = color.length;
+	for (var i = 0; i < n; i++)
+	{
+		colors[colors.length] = color[i];
+		if (i % 3 != 0 || i == 0)
+		{
+			frameColors[frameColors.length] = 1.0 - color[i];
+		}
+		else{
+			frameColors[frameColors.length] = 1.0;
+		}
+	}
 }
