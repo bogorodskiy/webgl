@@ -13,6 +13,7 @@ var currentOperation = OPERATION_TRANSLATION;
 var currentShapeType = null;
 var selectedShape = null;
 var createFunctionByType = {};
+var shapeById = {};
 
 window.onload = function init() 
 {
@@ -23,12 +24,13 @@ window.onload = function init()
 	canvas = document.getElementById("gl-canvas");
 	canvasBounds = canvas.getBoundingClientRect();
 	$("#addButton").on("click", onAddButtonClick);
+	$("#deleteButton").on("click", onDeleteButtonClick);
 	
-	$("#xSlider").on("slidechange", onXChange);
+	$("#xSlider").on("slide", onXChange);
 	onXChange();
-	$("#ySlider").on("slidechange", onYChange);
+	$("#ySlider").on("slide", onYChange);
 	onYChange();
-	$("#zSlider").on("slidechange", onZChange);
+	$("#zSlider").on("slide", onZChange);
 	onZChange();
 	
 	$("#translationSelector").click(onOperationTypeChange);
@@ -40,6 +42,9 @@ window.onload = function init()
 	$("#coneSelector").click(onShapeTypeChange);
 	$("#cylinderSelector").click(onShapeTypeChange);
 	onShapeTypeChange();
+	
+	$("#selectedShapeList").selectmenu({ width : 'auto'});
+	$("#selectedShapeList").on("selectmenuselect", onShapeSelected);
 
 	gl = WebGLUtils.setupWebGL(canvas);
 	if (!gl) 
@@ -103,9 +108,9 @@ function updateSliders()
 		}
 		else if (currentOperation == OPERATION_ROTATION)
 		{
-			xValue = selectedShape[SHAPE_ROTATION_X];
-			yValue = selectedShape[SHAPE_ROTATION_Y];
-			zValue = selectedShape[SHAPE_ROTATION_Z];
+			xValue = selectedShape[SHAPE_ROTATION_X] * 180 / Math.PI;
+			yValue = selectedShape[SHAPE_ROTATION_Y] * 180 / Math.PI;
+			zValue = selectedShape[SHAPE_ROTATION_Z] * 180 / Math.PI;
 			
 			min = 0.0;
 			max = 360.0;
@@ -137,6 +142,9 @@ function updateSliders()
 	$("#xSlider").slider('value', xValue);
 	$("#ySlider").slider('value', yValue);
 	$("#zSlider").slider('value', zValue);
+	onXChange();
+	onYChange();
+	onZChange();
 }
 
 function updateShapeProperties()
@@ -232,8 +240,12 @@ function onAddButtonClick(event)
 	shape[SHAPE_FRAME_COLOR_BUFFER] = frameColorBuffer;
 	
 	shapes[shapes.length] = shape;
+	shapeById[shape[SHAPE_ID]] = shape;
 	selectedShape = shape;
-	$("#selectedShapeText").text("Selected shape: " + selectedShape[SHAPE_ID]);
+
+	$('#selectedShapeList').append("<option value='" + selectedShape[SHAPE_ID] + "'>" + selectedShape[SHAPE_ID] + "</option");
+	$('#selectedShapeList').val(selectedShape[SHAPE_ID]);
+	$("#selectedShapeList").selectmenu("refresh");
 	
 	updateSliders();
 	render();
@@ -281,7 +293,7 @@ function onXChange(event, ui)
 {
 	var userInteraction = (event != null && event.view != null);
 
-	var x = $("#xSlider").slider("option", "value");
+	var x = ui ? ui.value : $("#xSlider").slider("option", "value");
 	$("#xCaption").text("X = " + x);
 	if (userInteraction)
 	{
@@ -292,7 +304,7 @@ function onYChange(event, ui)
 {
 	var userInteraction = (event != null && event.view != null);
 	
-	var y = $("#ySlider").slider("option", "value");
+	var y =  ui ? ui.value : $("#ySlider").slider("option", "value");
 	$("#yCaption").text("Y = " + y);
 	if (userInteraction)
 	{
@@ -303,11 +315,43 @@ function onZChange(event, ui)
 {
 	var userInteraction = (event != null && event.view != null);
 	
-	var z = $("#zSlider").slider("option", "value");
+	var z = ui ? ui.value : $("#zSlider").slider("option", "value");
 	$("#zCaption").text("Z = " + z);
 	if (userInteraction)
 	{
 		updateShapeProperties();
+	}
+}
+
+function onShapeSelected(event, ui)
+{
+	var shapeId = $('#selectedShapeList').val();
+	selectedShape = shapeById[shapeId];
+	updateSliders();
+}
+
+function onDeleteButtonClick(event)
+{
+	if (selectedShape != null)
+	{
+		var shapeId = selectedShape[SHAPE_ID];
+		delete shapeById[shapeId];
+		var n = shapes.length;
+		for (var i = 0; i < n; i++)
+		{
+			if (shapes[i][SHAPE_ID] == shapeId)
+			{
+				shapes.splice(i, 1);
+				break;
+			}
+		}
+		
+		$('#selectedShapeList :selected').remove();
+		$("#selectedShapeList").selectmenu("refresh");
+		
+		selectedShape = null;
+		updateSliders();
+		render();
 	}
 }
 

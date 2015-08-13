@@ -206,7 +206,6 @@ function createCylinder(color)
 	addVertex(vertices, 0, height + yOffset, 0, colors, frameColors, color);
 	
 	var topVertexIndex = (vertices.length / 3) - 1;
-	console.log("topVertexIndex", topVertexIndex);
 
 	for (i = 3; i <= edgesCount * 2; i++)
 	{
@@ -251,8 +250,8 @@ function createCylinder(color)
 	conesCount++;
 	
 	var result = createShape();
-	result[SHAPE_ID] = SHAPE_CONE + "_" + conesCount.toString();
-	result[SHAPE_TYPE] = SHAPE_CONE;
+	result[SHAPE_ID] = SHAPE_CYLINDER + "_" + cylindersCount.toString();
+	result[SHAPE_TYPE] = SHAPE_CYLINDER;
 	result[SHAPE_VERTICES] = vertices;
 	result[SHAPE_INDICES] = indices;
 	result[SHAPE_NORMALS] = normals;
