@@ -38,7 +38,7 @@ var cylindersCount = 0;
 
 function createSphere(color)
 {
-	var radius = 0.5;
+	var radius = 0.1;
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
@@ -111,8 +111,8 @@ function createSphere(color)
 
 function createCone(color)
 {
-	var radius = 0.5;
-	var height = 1;
+	var radius = 0.1;
+	var height = 0.2;
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
@@ -120,7 +120,7 @@ function createCone(color)
 	var colors = [];
 	var frameColors = [];
 	var edgesCount = 30;
-	var yOffset = -0.5;
+	var yOffset = -0.1;
 
 	// bottom center
 	addVertex(vertices, 0, yOffset, 0, colors, frameColors, color);
@@ -174,8 +174,8 @@ function createCone(color)
 
 function createCylinder(color)
 {
-	var radius = 0.5;
-	var height = 1;
+	var radius = 0.1;
+	var height = 0.2;
 	var vertices = [];
 	var normals = [];
 	var textureCoordinates = [];
@@ -183,7 +183,7 @@ function createCylinder(color)
 	var colors = [];
 	var frameColors = [];
 	var edgesCount = 30;
-	var yOffset = -0.5;
+	var yOffset = -0.1;
 
 	// bottom center
 	addVertex(vertices, 0, yOffset, 0, colors, frameColors, color);
@@ -349,6 +349,8 @@ function createShape()
 	}
 	
 	// NOTE transpose matrices for webgl
+	
+	result.setTranslation(0, 0, -0.5);
 	
 	return result;
 }

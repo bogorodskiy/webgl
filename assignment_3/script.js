@@ -14,6 +14,10 @@ var currentShapeType = null;
 var selectedShape = null;
 var createFunctionByType = {};
 var shapeById = {};
+var fovy = 45;
+var aspect = 1.0;
+var near = 0.1;
+var far = 10.0;
 
 window.onload = function init() 
 {
@@ -27,10 +31,13 @@ window.onload = function init()
 	$("#deleteButton").on("click", onDeleteButtonClick);
 	
 	$("#xSlider").on("slide", onXChange);
+	$("#xSlider").on("slidechange", onXChange);
 	onXChange();
 	$("#ySlider").on("slide", onYChange);
+	$("#ySlider").on("slidechange", onYChange);
 	onYChange();
 	$("#zSlider").on("slide", onZChange);
+	$("#zSlider").on("slidechange", onZChange);
 	onZChange();
 	
 	$("#translationSelector").click(onOperationTypeChange);
@@ -52,10 +59,11 @@ window.onload = function init()
 		console.log("WebGL isn't available"); 
 	}
 
+	aspect = canvas.width / canvas.height;
 	gl.viewport(0, 0, canvas.width, canvas.height);
 	gl.clearColor(0.2, 0.2, 0.2, 1);
 	gl.enable(gl.DEPTH_TEST);
-	gl.enable(gl.CULL_FACE);
+	//gl.enable(gl.CULL_FACE);
 	//
 	//  Load shaders and initialize attribute buffers
 	//
@@ -73,6 +81,7 @@ window.onload = function init()
 	program.vRotationYMatrix = gl.getUniformLocation(program, "vRotationYMatrix");
 	program.vRotationZMatrix = gl.getUniformLocation(program, "vRotationZMatrix");
 	program.vScaleMatrix = gl.getUniformLocation(program, "vScaleMatrix");
+	program.projectionMatrix = gl.getUniformLocation(program, "projectionMatrix");
 	
 	render();
 }
@@ -92,9 +101,18 @@ function updateSliders()
 	var xValue = 0.0;
 	var yValue = 0.0;
 	var zValue = 0.0;
-	var min = 0.0;
-	var max = 1.0;
-	var step = 0.1;
+	
+	var xmin = 0.0;
+	var xmax = 0.5;
+	var xstep = 0.05;
+
+	var ymin = 0.0;
+	var ymax = 0.5;
+	var ystep = 0.05;
+
+	var zmin = 0.0;
+	var zmax = 1.0;
+	var zstep = 0.1;
 	
 	if (selectedShape != null)
 	{
@@ -104,7 +122,11 @@ function updateSliders()
 			yValue = selectedShape[SHAPE_TRANSLATION_Y];
 			zValue = selectedShape[SHAPE_TRANSLATION_Z];
 			
-			min = -1;
+			xmin = -0.5;
+			ymin = -0.5;
+			zmin = -4;
+			zmax = -0.2;
+			zstep = 0.1;
 		}
 		else if (currentOperation == OPERATION_ROTATION)
 		{
@@ -112,9 +134,17 @@ function updateSliders()
 			yValue = selectedShape[SHAPE_ROTATION_Y] * 180 / Math.PI;
 			zValue = selectedShape[SHAPE_ROTATION_Z] * 180 / Math.PI;
 			
-			min = 0.0;
-			max = 360.0;
-			step = 1.0;
+			xmin = -180.0;
+			xmax = 180.0;
+			xstep = 1.0;
+			
+			ymin = -180.0;
+			ymax = 180.0;
+			ystep = 1.0;
+			
+			zmin = -180.0;
+			zmax = 180.0;
+			zstep = 1.0;
 		}
 		else if (currentOperation == OPERATION_SCALE)
 		{
@@ -122,22 +152,26 @@ function updateSliders()
 			yValue = selectedShape[SHAPE_SCALE_Y];
 			zValue = selectedShape[SHAPE_SCALE_Z];
 			
-			min = 0.1;
-			max = 3.0;
+			xmin = 0.1;
+			ymin = 0.1;
+			zmin = 0.1;
+			xmax = 3.0;
+			ymax = 3.0;
+			zmax = 3.0;
 		}
 	}
 	
-	$("#xSlider").slider("option", "min", min);
-	$("#xSlider").slider("option", "max", max);
-	$("#xSlider").slider("option", 'step', step);
+	$("#xSlider").slider("option", "min", xmin);
+	$("#xSlider").slider("option", "max", xmax);
+	$("#xSlider").slider("option", 'step', xstep);
 	
-	$("#ySlider").slider("option", "min", min);
-	$("#ySlider").slider("option", "max", max);
-	$("#ySlider").slider("option", 'step', step);
+	$("#ySlider").slider("option", "min", ymin);
+	$("#ySlider").slider("option", "max", ymax);
+	$("#ySlider").slider("option", 'step', ystep);
 	
-	$("#zSlider").slider("option", "min", min);
-	$("#zSlider").slider("option", "max", max);
-	$("#zSlider").slider("option", 'step', step);
+	$("#zSlider").slider("option", "min", zmin);
+	$("#zSlider").slider("option", "max", zmax);
+	$("#zSlider").slider("option", 'step', zstep);
 
 	$("#xSlider").slider('value', xValue);
 	$("#ySlider").slider('value', yValue);
@@ -389,6 +423,11 @@ function render()
 		
 		var scaleMatrix = transposeMat4(shape.scale);
 		gl.uniformMatrix4fv(program.vScaleMatrix, false, scaleMatrix);
+		
+		var projectionMatrix = perspective(fovy, aspect, near, far);
+		var projectionMatrixLoc = program.projectionMatrix;
+		//gl.uniformMatrix4fv(program.projectionMatrix, false, projectionMatrix);
+		gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 		
         gl.drawElements(gl.TRIANGLES, indexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 		
