@@ -65,9 +65,7 @@ function createSphere(color)
 			var u = 1 - (longNumber / longitudeBands);
 			var v = 1 - (latNumber / latitudeBands);
 			
-			var normal = vec3(x, y, z);
-			normal = normalize(normal);
-			normals[normals.length] = normal;
+			addNormal(normals, x, y, z);
 			
 			//textureCoordinates[textureCoordinates.length] = u;
 			//textureCoordinates[textureCoordinates.length] = v;
@@ -118,10 +116,7 @@ function createCone(color)
 
 	// bottom center
 	addVertex(vertices, 0, yOffset, 0);
-	
-	var normal = vec3(0, yOffset, 0);
-	normal = normalize(normal);
-	normals[normals.length] = normal;
+	addNormal(normals, 0, yOffset, 0);
 	
 	var topVertex = vec3(0, height + yOffset, 0);
 	
@@ -148,17 +143,13 @@ function createCone(color)
 		var currentVertex = vec3(vertices[vertices.length - 3], vertices[vertices.length - 2], vertices[vertices.length - 1]);
 		var v1 = subtract(prevVertex, topVertex);
 		var v2 = subtract(topVertex, currentVertex);
-		normal = cross(v1, v2);
-		normal = vec3(normal);
-		normal = normalize(normal);
-		normals[normals.length] = normal;
+		var crossProduct = cross(v1, v2);
+		addNormal(normals, crossProduct[0], crossProduct[1], crossProduct[2]);
 	}
 
 	// top point
 	addVertex(vertices, 0, height + yOffset, 0);
-	normal = topVertex;
-	normal = normalize(normal);
-	normals[normals.length] = normal;
+	addNormal(normals, 0, height + yOffset, 0);
 	
 	var topVertexIndex = (vertices.length / 3) - 1;
 
@@ -207,9 +198,7 @@ function createCylinder(color)
 
 	// bottom center
 	addVertex(vertices, 0, yOffset, 0);
-	var normal = vec3(0, yOffset, 0);
-	normal = normalize(normal);
-	normals[normals.length] = normal;
+	normals(normals, 0, yOffset, 0);
 	
 	for (var i = 0; i < edgesCount; i++)
 	{
@@ -223,19 +212,13 @@ function createCylinder(color)
 		
 		addVertex(vertices, x, y, z);
 		addVertex(vertices, x, y + height, z);
-		
-		normal = vec3(x, 0, z);
-		normal = normalize(normal);
-		normals[normals.length] = normal;
-		normals[normals.length] = normal;
+		addNormal(normals, x, 0, z);
+		addNormal(normals, x, 0, z);
 	}
 
 	// top center
 	addVertex(vertices, 0, height + yOffset, 0);
-	normal = vec3(0, height + yOffset, 0);
-	normal = normalize(normal);
-	normals[normals.length] = normal;
-	normals[normals.length] = normal;
+	addNormal(normals, 0, height + yOffset, 0);
 	
 	var topVertexIndex = (vertices.length / 3) - 1;
 
@@ -424,4 +407,11 @@ function addVertex(vertices, x, y, z)
 	vertices[vertices.length] = x;
 	vertices[vertices.length] = y;
 	vertices[vertices.length] = z;
+}
+
+function addNormal(normals, x, y, z)
+{
+	normals[normals.length] = x;
+	normals[normals.length] = y;
+	normals[normals.length] = z;
 }
